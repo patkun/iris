@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+### TEST SWITCH
+test=true
+
+if test then require_relative File.join("..","lib","iris.rb")
+else require 'iris' end
+
+
+files = ARGV.select{|a| File.file?(a)}
+cmds = ARGV - files
+ARGV.delete_if{|a| cmds.include?(a)}
+
+
+case cmds.shift
+  
+when "html"
+  i = Iris.new(ARGF.read)
+  puts i.html
+
+when "markdown"
+  i = Iris.new(ARGF.read)
+  puts i.markdown
+
+when "latex"
+  i = Iris.new(ARGF.read)
+  puts i.latex(cmds.shift)
+
+when "pdf"
+  i = Iris.new(ARGF.read)
+  if test then i.pdf(cmds.shift,File.expand_path('../test/aux', File.dirname(__FILE__)))
+  else i.pdf(cmds.shift) end
+end

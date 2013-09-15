@@ -7,7 +7,14 @@ Gem::Specification.new do |s|
   s.description = "**iris** helps produce beautiful printable texts for printing and in HTML for use in the Classics classroom."
   s.authors     = ["Patrick Kuntschnik"]
   s.email       = 'patrick.kuntschnik@gmail.com'
-  s.files       = ["lib/iris.rb"]
+  s.files       = ["lib/iris.rb",
+                   "lib/iris/bubo_grammar.rb",
+                   "lib/iris/bubo_builder.rb",
+                   "lib/iris/bubo_htmlhead.html",
+                   "lib/iris/bubo_latexhead.tex",
+                   "lib/iris/bubo_handout.css",
+                   "lib/iris/bubo_i.js"
+                  ]
 #  s.homepage    = 'http://rubygems.org/gems/iris'
   s.license       = 'MIT'
 end

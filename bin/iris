@@ -12,23 +12,28 @@ files = ARGV.select{|a| File.file?(a)}
 cmds = ARGV - files
 ARGV.delete_if{|a| cmds.include?(a)}
 
+bubo = false
+if cmds.first == "bubo" then
+  bubo = true
+  cmds.shift
+end
 
 case cmds.shift
   
 when "html"
-  i = Iris.new(ARGF.read)
+  i = Iris.new(ARGF.read,bubo)
   puts i.html
 
 when "markdown"
-  i = Iris.new(ARGF.read)
+  i = Iris.new(ARGF.read,bubo)
   puts i.markdown
 
 when "latex"
-  i = Iris.new(ARGF.read)
+  i = Iris.new(ARGF.read,bubo)
   puts i.latex(cmds.shift)
 
 when "pdf"
-  i = Iris.new(ARGF.read)
+  i = Iris.new(ARGF.read,bubo)
   if test then i.pdf(cmds.shift,File.expand_path('../test/aux', File.dirname(__FILE__)))
   else i.pdf(cmds.shift) end
 end

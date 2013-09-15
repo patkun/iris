@@ -33,14 +33,22 @@ class TestIris < Test::Unit::TestCase
     File.delete(File.join(File.dirname(__FILE__),"aux","texput.pdf"))
   end
 
+  def test_bubo
+    s = File.read(File.join(File.dirname(__FILE__),"aux","sampletext.txt"))
+    i = Iris.new(s,true)
+    assert_respond_to(i,"latex")
+    assert_match(/textbf/,i.latex)
+    assert_respond_to(i,"html")
+    assert_match(/bit of text/,i.html)
+    puts i.html
+  end
+
   def test_bin
-    puts
     assert_match(/bit of text/,`ruby bin/iris html test/aux/sampletext.txt`)
     assert_match(/bit of text/,`ruby bin/iris latex test/aux/sampletext.txt`)
     system("ruby bin/iris pdf test/aux/sampletext.txt")
     assert(File.file?(File.join(File.dirname(__FILE__),"aux","texput.pdf")))
     File.delete(File.join(File.dirname(__FILE__),"aux","texput.pdf"))
-    puts `ruby bin/iris latex large test/aux/sampletext.txt`
     assert_match(/inner=1.8cm/,`ruby bin/iris latex large test/aux/sampletext.txt`)
   end
 

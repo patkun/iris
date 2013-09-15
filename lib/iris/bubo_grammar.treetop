@@ -1,0 +1,71 @@
+grammar BuboGrammar
+
+rule document
+token+ <Document>
+	end
+
+	rule token
+		environment / command / simplecommand / text
+	end
+
+	rule command
+		'\\' !"begin" !"end" operation options parameters <Command>
+	end
+
+	rule simplecommand
+	     '\\' !"begin" !"end" operation options '{}'? <Simplecommand>
+	end
+
+	rule options
+	     ('[' plain_text ']')? / ('[]')? <Text>
+	end
+
+	rule environment
+		'\\begin' lbr ( envoperation ) rbr environmentcontent '\\end' lbr envoperation rbr <Environment>
+	end
+
+        rule environmentcontent
+	     token+ <Environmentcontent>
+        end
+
+	rule envoperation
+	     plain_text <Envoperation>
+	end
+
+	rule operation
+		 plain_text <Operation>
+	end
+
+	rule parameters
+		parameter+ <Parameters>
+	end
+
+	rule parameter
+		lbr parametercontent rbr <Parameter>
+	end
+
+        rule lbr
+                 '{' <Brace>
+        end
+
+        rule rbr
+                 '}' <Brace>
+        end
+
+        rule parametercontent
+                 token+ <Parametercontent>
+        end
+
+	rule text
+		[^\\\{\}]+ <Text>
+	end
+
+	rule plain_text
+		[^\\^\{^\}^\[^\]]+ <Text>
+	end
+
+	rule comment
+	     '%' [^\n]*  <Comment>
+	end
+
+end

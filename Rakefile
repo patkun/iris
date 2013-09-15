@@ -9,6 +9,10 @@ Rake::TestTask.new do |t|
   t.libs << "test"
 end
 
+task :build do
+  `(cd lib/iris; tt bubo_grammar.treetop)`
+end
+
 task :install do
   binfilepath = File.join("bin","iris")
   testbinfile = File.read(binfilepath)

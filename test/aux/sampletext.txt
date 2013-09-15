@@ -1,0 +1,3 @@
+# This Is a Title
+
+This is \marg{Some **bold** text in the margin.}a bit of text.

@@ -1,0 +1,46 @@
+\usepackage{setspace,adjustbox,xparse,tikz,multicol,pst-node}
+\usepackage{pdfpages}
+\newcommand{\marg}[1]{\mbox{}\marginpar[\raggedleft\footnotesize\setstretch{0}#1]{\raggedright\footnotesize\setstretch{0}#1}}
+\newcommand\vocab[2]{\mbox{}\marg{#1}#2}
+\setlength{\marginparwidth}{4.5cm}
+\setlength{\marginparpush}{1.3mm}
+\newcommand\nota[2]{\stackbox[c][b]{\baselineskip=0pt {\tiny#1}\\#2\par}}
+\newsavebox{\notabox}                                 
+\NewDocumentEnvironment{Nota}{m}{\begin{lrbox}{\notabox}}{\end{lrbox}\stackbox[c][b]{\baselineskip=0pt {\tiny #1}\\\usebox{\notabox}\par}}
+
+%\newcommand\commentary[1]{\parbox{\textwidth}{\tiny\setstretch{1}#1}}
+
+\newenvironment{commentary}{\hspace*{-0.2\textwidth}\begin{minipage}{1.4\textwidth}\begin{multicols}{2}\footnotesize\setstretch{1}}{\end{multicols}\end{minipage}}
+
+\newenvironment{settext}{%
+
+\setstretch{3}\large
+
+}{%
+\par
+
+\setstretch{1}\normalsize}
+
+\newcommand\linedpage{%
+\newpage
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture, overlay]
+\tikzset{normal lines/.style={gray, very thin}} 
+\tikzset{margin lines/.style={gray, thick}} 
+\tikzset{mm lines/.style={gray, ultra thin}} 
+\tikzset{strong lines/.style={black, very thin}} 
+\tikzset{master lines/.style={black, very thick}} 
+\tikzset{dashed master lines/.style={loosely dashed, black, very thick}} 
+
+\node at (current page.south west){
+  \begin{tikzpicture}[remember picture, overlay]
+
+    \foreach \y in {1.5, 2.4,...,28.8} 
+      \draw[style=normal lines](0,\y) -- (210mm, \y); 
+    %\draw[style=normal lines] (160mm,0)--(160mm,297mm);
+
+  \end{tikzpicture}
+};
+\end{tikzpicture}
+\newpage
+}

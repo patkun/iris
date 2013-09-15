@@ -1,0 +1,27 @@
+@import url(http://fonts.googleapis.com/css?family=GFS+Neohellenic:400,700,400italic&subset=greek);
+
+body {
+    font-family: "GFS Neohellenic",Calibri,sans-serif;
+}
+
+blockquote, p {
+    text-align:justify;
+}
+
+img {
+    max-width:100%;
+}
+
+dt {
+    font-weight:bold;
+}
+
+body .ui-tooltip {
+    font-family: "GFS Neohellenic",Calibri,sans-serif;
+    padding: 8px;
+    position: absolute;
+    z-index: 9999;
+    -webkit-box-shadow: 0 0 5px lightgray;
+    box-shadow: 0 0 5px lightgray;
+    background-color:white;
+}

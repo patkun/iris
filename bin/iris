@@ -12,6 +12,8 @@ files = ARGV.select{|a| File.file?(a)}
 cmds = ARGV - files
 ARGV.delete_if{|a| cmds.include?(a)}
 
+filestring = files.map{|f| File.read(f)}.join("\n\n") unless files.empty?
+
 bubo = false
 if cmds.first == "bubo" then
   bubo = true
@@ -21,19 +23,30 @@ end
 case cmds.shift
   
 when "html"
-  i = Iris.new(ARGF.read,bubo)
+  i = Iris.new(filestring,bubo)
   puts i.html
 
 when "markdown"
-  i = Iris.new(ARGF.read,bubo)
+  i = Iris.new(filestring,bubo)
   puts i.markdown
 
 when "latex"
-  i = Iris.new(ARGF.read,bubo)
-  puts i.latex(cmds.shift)
+  i = Iris.new(filestring,bubo)
+  layout = cmds.shift
+  pretty = cmds.shift
+  pretty_switch = false
+  if pretty == "pretty" then pretty_switch = true end
+  puts i.latex(layout,pretty_switch)
 
 when "pdf"
-  i = Iris.new(ARGF.read,bubo)
-  if test then i.pdf(cmds.shift,File.expand_path('../test/aux', File.dirname(__FILE__)))
-  else i.pdf(cmds.shift) end
+  i = Iris.new(filestring,bubo)
+  layout = cmds.shift
+  pretty = cmds.shift
+  pretty_switch = false
+  if pretty == "pretty" then pretty_switch = true end
+  if test then i.pdf(layout,pretty_switch,File.expand_path('../test/aux', File.dirname(__FILE__)))
+  else i.pdf(layout,pretty_switch) end
+
+when "hm"
+  puts 
 end

@@ -1,7 +1,9 @@
 @import url(http://fonts.googleapis.com/css?family=GFS+Neohellenic:400,700,400italic&subset=greek);
 
 body {
-    font-family: "GFS Neohellenic",Calibri,sans-serif;
+    font-family: "GFS Neohellenic",Calibri,"Arial Unicode",sans-serif;
+    font-size:20pt;
+    padding-bottom:100px;
 }
 
 blockquote, p {
@@ -16,12 +18,51 @@ dt {
     font-weight:bold;
 }
 
+span.agree {
+    border-radius: 5px;
+}
+
 body .ui-tooltip {
     font-family: "GFS Neohellenic",Calibri,sans-serif;
     padding: 8px;
     position: absolute;
     z-index: 9999;
-    -webkit-box-shadow: 0 0 5px lightgray;
-    box-shadow: 0 0 5px lightgray;
-    background-color:white;
+    -webkit-box-shadow: 0 0 10px black;
+    box-shadow: 0 0 10px black;
+    border-width:0px;
+    background-color:#8DAA70;
+    border-radius:5px;
+}
+
+body .ui-tooltip-content {
+    border-width:0px;
+}
+
+div#vocab_box {
+    font-family: "GFS Neohellenic",Calibri,sans-serif;
+    padding: 8px;
+    z-index: 9999;
+    -webkit-box-shadow: 0 0 10px black;
+    box-shadow: 0 0 10px black;
+    background-color:#8DAA70;
+    border-radius:5px;
+    float:left;
+}
+
+div#nota_box {
+    font-family: "GFS Neohellenic",Calibri,sans-serif;
+    padding: 8px;
+    z-index: 9999;
+    -webkit-box-shadow: 0 0 10px black;
+    box-shadow: 0 0 10px black;
+    background-color::#8DAA70;
+    border-radius:5px;
+    float:left;
+}
+
+div#info_bar {
+    position:fixed;
+    bottom:10px;
+    left:10px;
+    z-index: 9999;
 }

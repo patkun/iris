@@ -1,3 +1,6 @@
 # This Is a Title
 
 This is \marg{Some **bold** text in the margin.}a bit of text.
+
+\vocab{**at** ‘but’}{at} \vocab{father bla}{\nota{nom sg}{pater}} \nota{nom}{\vocab{foo}{Aeneas}} \agree{0001}{\vocab{audio, audire, audivi, auditum ‘hear’}{audito}} \agree{0001}{\vocab{nomen, nominis n ‘name’}{nomine}} Turni
+\vocab{desero, deserere, deserui, desertum ‘leave’}{deserit} et \vocab{murus, muri m ‘wall’}{muros} et \agree{0002}{\vocab{summus, summa, summum ‘topmost’}{summas}} \vocab{desero, deserere, deserui, desertum ‘leave’}{deserit} \agree{0002}{arces}

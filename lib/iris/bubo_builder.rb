@@ -1,5 +1,37 @@
 require 'pandoc-ruby'
 
+module Vocab
+  @list = Array.new
+
+  def self.add(x)
+    @list << x
+  end
+
+  def self.list
+    return @list
+  end
+
+  def self.flush
+    @list = Array.new
+  end
+end
+
+module Nota
+  @list = Array.new
+
+  def self.add(x)
+    @list << x
+  end
+
+  def self.list
+    return @list
+  end
+
+  def self.flush
+    @list = Array.new
+  end
+end
+
 module Document
   def munch(f)
     t = String.new
@@ -107,26 +139,40 @@ module Command
   def munch(f)
     case operation.text_value
     when "agree"
+      agree_tag = parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1')
       if f == "html"
-        return "<span class=\"agree cong" + parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1') + "\">" + parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1') + "</span>"
+        agree_arr = agree_tag.gsub(/-/,' ').split
+        agree_arr.map!{|c|
+          if c =~ /^[0-9]+$/ then "cong#{c}" else c end
+        }
+        return "<span class=\"agree #{agree_arr.uniq.join(" ")}\">" + parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1') + "</span>"
       else
-        return parameters.getval[1]
+        return parameters.get(f)[1]
       end
     when "nota"
+      nota = parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1')
+      intext = parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1')
       if f == "latex"
         return self.desc(f)
       elsif f == "html"
-        return parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1')
+        Nota.add(nota)
+        o = "<span class=\"nota_anchor nota#{Nota.list.length - 1}\">" + intext + "</span>"
+        return o
       else
-        return parameters.getval[1]
+        return parameters.get(f)[1]
       end
     when "vocab"
+      lemma = parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1')
+      intext = parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1')
       if f == "latex"
-        return self.desc(f)
+        #return self.desc(f)
+        return parameters.get(f)[1]
       elsif f == "html"
-        return "<span class=\"vocab\" title=\"" + parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1') + "\">" + parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1') + "</span>"
+        Vocab.add(lemma)
+        o = "<span class=\"vocab_anchor vocab#{Vocab.list.length - 1}\">" + intext + "</span>"
+        return o
       else
-        return parameters.getval[1]
+        return parameters.get(f)[1]
       end
     when "gr"
       if f == "latex"

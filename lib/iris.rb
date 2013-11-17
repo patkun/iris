@@ -20,7 +20,7 @@ class Iris
     end
     @settings = [
                  {
-                   :from => "markdown+hard_line_breaks",
+                   :from => "markdown+hard_line_breaks+pipe_tables",
                    :to => "markdown",
                  },
                  :smart,
@@ -119,6 +119,13 @@ class Iris
       local_settings << {:V => "geometry=bottom=3cm"}
       local_settings << {:V => "geometry=inner=5cm"}
       local_settings << {:V => "geometry=outer=6cm"}
+      local_settings << {:V => "fontsize=11pt"}
+
+    when "nomargins"
+      local_settings << {:V => "geometry=top=1cm"}
+      local_settings << {:V => "geometry=bottom=1cm"}
+      local_settings << {:V => "geometry=inner=1.8cm"}
+      local_settings << {:V => "geometry=outer=1.8cm"}
       local_settings << {:V => "fontsize=11pt"}
 
     else

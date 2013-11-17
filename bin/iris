@@ -12,7 +12,13 @@ files = ARGV.select{|a| File.file?(a)}
 cmds = ARGV - files
 ARGV.delete_if{|a| cmds.include?(a)}
 
-filestring = files.map{|f| File.read(f)}.join("\n\n") unless files.empty?
+filestring = String.new
+
+unless files.empty? then
+  filestring = files.map{|f| File.read(f)}.join("\n\n")
+else
+  filestring = ARGF.read
+end
 
 bubo = false
 if cmds.first == "bubo" then

@@ -1,7 +1,8 @@
 @import url(http://fonts.googleapis.com/css?family=GFS+Neohellenic:400,700,400italic&subset=greek);
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic);
 
 body {
-    font-family: "GFS Neohellenic",Calibri,"Arial Unicode",sans-serif;
+    font-family: Roboto,"GFS Neohellenic",Calibri,"Arial Unicode",sans-serif;
     font-size:20pt;
     padding-bottom:100px;
 }

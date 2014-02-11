@@ -33,6 +33,7 @@ module Nota
 end
 
 module Document
+
   def munch(f)
     t = String.new
     elements.each {|element|
@@ -86,32 +87,44 @@ module Environment
   def munch(f)
     case envoperation.text_value
     when "commentary"
-      if f == "latex"
+      if f.format == "latex"
         return self.desc(f)
       else
         return ""
       end
     when "settext"
-      if f == "latex"
+      if f.format == "latex"
         return self.desc(f)
       else
         return environmentcontent.munch(f)
       end
     when "gr"
-      if f == "latex"
+      if f.format == "latex"
         return self.desc(f)
-      elsif f == "html"
+      elsif f.format == "html"
         return "<span class=\"greek\">" + environmentcontent.munch(f) + "</span>"
       else
         return environmentcontent.munch(f)
       end
     when "la"
-      if f == "latex"
+      if f.format == "latex"
         return self.desc(f)
-      elsif f == "html"
+      elsif f.format == "html"
         return "<span class=\"latin\">" + environmentcontent.munch(f) + "</span>"
       else
         return environmentcontent.munch(f)
+      end
+    when "pupiltext"
+      if f.version == "pupiltext"
+        return environmentcontent.munch(f)
+      else
+        return ""
+      end
+    when "teachertext"
+      if f.version == "teachertext"
+        return environmentcontent.munch(f)
+      else
+        return ""
       end
     else
       return environmentcontent.munch(f)
@@ -129,7 +142,7 @@ module Environmentcontent
       self.elements.each {|element|
         t << element.munch(f)
       }
-      @converter = PandocRuby.new(t, :from => :markdown, :to => f.to_sym)
+      @converter = PandocRuby.new(t, {:from => 'markdown+hard_line_breaks+pipe_tables', :to => f.format.to_sym}, 'no-wrap')
       t = @converter.convert
       t.strip
   end
@@ -140,7 +153,7 @@ module Command
     case operation.text_value
     when "agree"
       agree_tag = parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1')
-      if f == "html"
+      if f.format == "html"
         agree_arr = agree_tag.gsub(/-/,' ').split
         agree_arr.map!{|c|
           if c =~ /^[0-9]+$/ then "cong#{c}" else c end
@@ -152,9 +165,9 @@ module Command
     when "nota"
       nota = parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1')
       intext = parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1')
-      if f == "latex"
+      if f.format == "latex"
         return self.desc(f)
-      elsif f == "html"
+      elsif f.format == "html"
         Nota.add(nota)
         o = "<span class=\"nota_anchor nota#{Nota.list.length - 1}\">" + intext + "</span>"
         return o
@@ -164,10 +177,10 @@ module Command
     when "vocab"
       lemma = parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1')
       intext = parameters.get(f)[1].gsub!(/^<p>(.*)<\/p>$/m,'\1')
-      if f == "latex"
+      if f.format == "latex"
         #return self.desc(f)
         return parameters.get(f)[1]
-      elsif f == "html"
+      elsif f.format == "html"
         Vocab.add(lemma)
         o = "<span class=\"vocab_anchor vocab#{Vocab.list.length - 1}\">" + intext + "</span>"
         return o
@@ -175,17 +188,17 @@ module Command
         return parameters.get(f)[1]
       end
     when "gr"
-      if f == "latex"
+      if f.format == "latex"
         return self.desc(f)
-      elsif f == "html"
+      elsif f.format == "html"
         return "<span class=\"greek\">" + parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1') + "</span>"
       else
         return parameters.getval[1]
       end
     when "la"
-      if f == "latex"
+      if f.format == "latex"
         return self.desc(f)
-      elsif f == "html"
+      elsif f.format == "html"
         return "<span class=\"latin\">" + parameters.get(f)[0].gsub!(/^<p>(.*)<\/p>$/m,'\1') + "</span>"
       else
         return parameters.getval[1]
@@ -249,7 +262,7 @@ module Parametercontent
     self.elements.each {|element|
       t << element.munch(f)
     }
-    @converter = PandocRuby.new(t, :from => :markdown, :to => f.to_sym)
+      @converter = PandocRuby.new(t, {:from => 'markdown+hard_line_breaks+pipe_tables', :to => f.format.to_sym}, 'no-wrap')
     t = @converter.convert
     t.strip
   end

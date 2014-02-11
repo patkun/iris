@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
                    "lib/iris/bubo_htmlhead.html",
                    "lib/iris/bubo_latexhead.tex",
                    "lib/iris/bubo_handout.css",
-                   "lib/iris/bubo_i.js"
+                   "lib/iris/bubo_i.js",
+                   "lib/iris/default.latex"
                   ]
 #  s.homepage    = 'http://rubygems.org/gems/iris'
   s.license       = 'MIT'

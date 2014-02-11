@@ -1,4 +1,4 @@
-\usepackage{setspace,adjustbox,xparse,tikz,multicol,pst-node}
+\usepackage{setspace,adjustbox,xparse,tikz,multicol,pst-node,changepage}
 \usepackage{pdfpages}
 \newcommand{\marg}[1]{\mbox{}\marginpar[\raggedleft\footnotesize\setstretch{0}#1]{\raggedright\footnotesize\setstretch{0}#1}}
 \newcommand\vocab[2]{\mbox{}\marg{#1}#2}
@@ -11,6 +11,11 @@
 %\newcommand\commentary[1]{\parbox{\textwidth}{\tiny\setstretch{1}#1}}
 
 \newenvironment{commentary}{\hspace*{-0.2\textwidth}\begin{minipage}{1.4\textwidth}\begin{multicols}{2}\footnotesize\setstretch{1}}{\end{multicols}\end{minipage}}
+
+%\newenvironment{commentary}{\begin{minipage}{\textwidth}\begin{multicols}{2}\footnotesize\setstretch{1}}{\end{multicols}\end{minipage}}
+        
+%\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+%\let\endchangemargin=\endlist
 
 \newenvironment{settext}{%
 

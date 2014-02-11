@@ -14,45 +14,95 @@ ARGV.delete_if{|a| cmds.include?(a)}
 
 filestring = String.new
 
-unless files.empty? then
+if not files.empty? then
   filestring = files.map{|f| File.read(f)}.join("\n\n")
 else
   filestring = ARGF.read
 end
 
 bubo = false
-if cmds.first == "bubo" then
+if cmds.include?("bubo") then
   bubo = true
-  cmds.shift
 end
 
-case cmds.shift
-  
-when "html"
+font = "neohellenic"
+f = %w(fell hoefler stempel typewriter bembo sabon minion frutiger helvetica) & cmds
+if not f.empty? then font = f.first end
+
+version = nil
+v = %w(pupiltext teachertext notext) & cmds
+if not v.empty? then version = v.first end
+
+if cmds.include?("html")
   i = Iris.new(filestring,bubo)
+  i.version(version)
   puts i.html
-
-when "markdown"
-  i = Iris.new(filestring,bubo)
-  puts i.markdown
-
-when "latex"
-  i = Iris.new(filestring,bubo)
-  layout = cmds.shift
-  pretty = cmds.shift
-  pretty_switch = false
-  if pretty == "pretty" then pretty_switch = true end
-  puts i.latex(layout,pretty_switch)
-
-when "pdf"
-  i = Iris.new(filestring,bubo)
-  layout = cmds.shift
-  pretty = cmds.shift
-  pretty_switch = false
-  if pretty == "pretty" then pretty_switch = true end
-  if test then i.pdf(layout,pretty_switch,File.expand_path('../test/aux', File.dirname(__FILE__)))
-  else i.pdf(layout,pretty_switch) end
-
-when "hm"
-  puts 
+  exit
 end
+
+if cmds.include?("markdown")
+  i = Iris.new(filestring,bubo)
+  i.version(version)
+  puts i.markdown
+  exit
+end
+
+layout = nil
+l = %w(twocolumn large margins nomargins) & cmds
+if not l.empty? then layout = l.first end
+
+if cmds.include?("latex")
+  i = Iris.new(filestring,bubo)
+  i.version(version)
+  i.font(font)
+  puts i.latex(layout)
+  exit
+end
+
+if cmds.include?("pdf")
+  i = Iris.new(filestring,bubo)
+  i.version(version)
+  i.font(font)
+  if test then
+    i.pdf(layout,File.expand_path('../test/aux', File.dirname(__FILE__)))
+  else
+    i.pdf(layout)
+  end
+  exit
+end
+
+if cmds.include?("rawlatex")
+  i = Iris.new(filestring,bubo)
+  i.version(version)
+  i.font(font)
+  puts i.rawlatex
+  exit
+end
+
+if cmds.include?("mrkd")
+  i = Iris.new(filestring,bubo)
+  i.version(version)
+  i.font(font)
+  puts i.mrkd
+  exit
+end
+
+i = Iris.new(filestring,bubo)
+i.public_methods(false).each do |m|
+  if cmds.include?(m.to_s) then
+    cmds.delete(m.to_s)
+    puts i.send(m,*cmds)
+    break
+  end
+end
+
+
+
+
+
+
+
+
+
+
+

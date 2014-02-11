@@ -7,49 +7,64 @@ require_relative 'iris/bubo_grammar'
 require_relative 'iris/bubo_builder'
 
 class Iris
-  attr_accessor :bubo, :tree
+  attr_accessor :bubo, :tree, :font
 
   def initialize(input,bubo=false)
     @bubo = bubo
     @input = input
     @tree = nil
+    @tree_f = OpenStruct.new
+    @tree_f.version = "pupiltext"
     @buboparser = nil
     if bubo then
       @buboparser = BuboGrammarParser.new
       @tree = @buboparser.parse(@input)
     end
+    @font = "neohellenic"
     @settings = [
                  {
                    :from => "markdown+hard_line_breaks+pipe_tables",
-                   :to => "markdown",
+                   :to => "markdown"
                  },
+                 'no-wrap',
                  :smart,
                  :s,
-                 "no-wrap".to_sym
                 ]
   end
 
-  def html
+  def version(version)
+    @tree_f.version = version
+  end
+
+  def font(font)
+    @font = font
+  end
+
+  def html(*p)
     local_settings = @settings.dup
+    local_settings.delete(:s)
     local_input = @input.dup
     Vocab.flush
     Nota.flush
     unless @tree.nil? then
-      local_input = @tree.munch("html")
-      preamblepath = File.join(File.dirname(File.expand_path(__FILE__)), "iris","bubo_htmlhead.html")
-      preamble = File.read(preamblepath)
-      jspath = File.join(File.dirname(File.expand_path(__FILE__)), "iris","bubo_i.js")
-      preamble.gsub!(/bubo_i.js/,jspath)
-      preamble.gsub!(/vocab = null/,"vocab = #{Vocab.list.to_json}")
-      preamble.gsub!(/nota = null/,"nota = #{Nota.list.to_json}")
-      csspath = File.join(File.dirname(File.expand_path(__FILE__)), "iris","bubo_handout.css")
-      local_settings << {:V => "css='#{csspath}'"}
-      #preamble.gsub!(/bubo_handout.css/,csspath)
-      local_settings << {:V => "header-includes='#{preamble}'"}
-      local_input << "<div id=\"info_bar\"><div id=\"vocab_box\">foo</div><div id=\"nota_box\">foo</div></div>"
+      @tree_f.format = "html"
+      local_input = @tree.munch(@tree_f)
+      #### uncomment to get back interactive html
+      #preamblepath = File.join(File.dirname(File.expand_path(__FILE__)), "iris","bubo_htmlhead.html")
+      #preamble = File.read(preamblepath)
+      #jspath = File.join(File.dirname(File.expand_path(__FILE__)), "iris","bubo_i.js")
+      #preamble.gsub!(/bubo_i.js/,jspath)
+      #preamble.gsub!(/vocab = null/,"vocab = #{Vocab.list.to_json}")
+      #preamble.gsub!(/nota = null/,"nota = #{Nota.list.to_json}")
+      #csspath = File.join(File.dirname(File.expand_path(__FILE__)), "iris","bubo_handout.css")
+      #local_settings << :s
+      #local_settings << {:V => "css='#{csspath}'"}
+      ###preamble.gsub!(/bubo_handout.css/,csspath)
+      #local_settings << {:V => "header-includes='#{preamble}'"}
+      #local_settings << "self-contained"
+      #local_input << "<div id=\"info_bar\"><div id=\"vocab_box\">foo</div><div id=\"nota_box\">foo</div></div>"
     end
     local_settings[0][:to] = "html5"
-    local_settings << "self-contained"
     converter = PandocRuby.new(local_input,
                                 *local_settings
                                 )
@@ -61,13 +76,14 @@ class Iris
     return o
   end
 
-  def markdown
+  def markdown(*p)
     local_settings = @settings.dup
     local_input = @input.dup
     Vocab.flush
     Nota.flush
     unless @tree.nil? then
-      local_input = @tree.munch("markdown_strict")
+      @tree_f.format = "markdown_strict"
+      local_input = @tree.munch(@tree_f)
     end
     local_settings[0][:to] = "markdown_strict"
     converter = PandocRuby.new(local_input,
@@ -76,13 +92,14 @@ class Iris
     return converter.convert
   end
 
-  def latex(layout=nil,pretty=false)
+  def latex(layout=nil)
     local_settings = @settings.dup
     local_input = @input.dup
     Vocab.flush
     Nota.flush
     unless @tree.nil? then
-      local_input = @tree.munch("latex")
+      @tree_f.format = "latex"
+      local_input = @tree.munch(@tree_f)
       preamblepath = File.join(File.dirname(File.expand_path(__FILE__)), "iris","bubo_latexhead.tex")
       preamble = File.read(preamblepath)
       local_settings << {:V => "header-includes=\"#{preamble}\""}
@@ -90,10 +107,11 @@ class Iris
 
     local_settings[0][:to] = "latex"
     local_settings << {:V => "twoside"}
+    local_settings << {:V => "tables"}
     local_settings << {:V => "geometry=a4paper"}
     local_settings << {"latex-engine" => "xelatex"}
-    if pretty == true then
-      local_settings << {:V => "pretty"}
+    unless @font.nil? then
+      local_settings << {:V => @font}
     end
 
     case layout
@@ -124,8 +142,8 @@ class Iris
     when "nomargins"
       local_settings << {:V => "geometry=top=1cm"}
       local_settings << {:V => "geometry=bottom=1cm"}
-      local_settings << {:V => "geometry=inner=1.8cm"}
-      local_settings << {:V => "geometry=outer=1.8cm"}
+      local_settings << {:V => "geometry=inner=2cm"}
+      local_settings << {:V => "geometry=outer=1cm"}
       local_settings << {:V => "fontsize=11pt"}
 
     else
@@ -136,7 +154,7 @@ class Iris
     end
 
     # DIRTY PROCESSING
-    local_input.gsub!(/([A-Z]{2,}( [A-Z]{2,})*)/){|m| "\\textsc{#{$1.downcase}}"}
+    #local_input.gsub!(/([A-Z]{2,}( [A-Z]{2,})*)/){|m| "\\textsc{#{$1.downcase}}"}
 
 
     converter = PandocRuby.new(local_input,*local_settings)
@@ -151,7 +169,7 @@ class Iris
 
   end
 
-  def pdf(layout=nil,pretty=false,test=false)
+  def pdf(layout=nil,test=false)
     options = Array.new
     texputpdf = "texput.pdf"
     if test then
@@ -161,14 +179,31 @@ class Iris
     end
     texputfiles = Dir.glob(texputpdf.gsub(/pdf$/,"*"))
     IO.popen("xelatex #{options.join(' ')}".chomp, 'r+') {|f| # don't forget 'r+'
-      f.puts(self.latex(layout,pretty)) # you can also use #write
+      f.puts(self.latex(layout)) # you can also use #write
       f.close_write
       f.read # get the data from the pipe
     }
 
   end
 
-  def vocab
+  def rawlatex(*p)
+    local_input = @input.dup
+    unless @tree.nil? then
+      @tree_f.format = "latex"
+      local_input = @tree.munch(@tree_f)
+    end
+    o = local_input
+    return o
+  end
+
+  def mrkd(*p)
+    local_input = @input.dup
+    local_input.gsub!(/--\+--/,'--|--')
+    o = local_input
+    return o
+  end
+
+  def vocab(*p)
     return Vocab.list
   end
 

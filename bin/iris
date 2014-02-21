@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ### TEST SWITCH
-test=true
+test=false
 
 if test then require_relative File.join("..","lib","iris.rb")
 else require 'iris' end
@@ -13,9 +13,11 @@ cmds = ARGV - files
 ARGV.delete_if{|a| cmds.include?(a)}
 
 filestring = String.new
+inputfile = nil
 
 if not files.empty? then
   filestring = files.map{|f| File.read(f)}.join("\n\n")
+  inputfile = files.first
 else
   filestring = ARGF.read
 end
@@ -26,7 +28,7 @@ if cmds.include?("bubo") then
 end
 
 font = "neohellenic"
-f = %w(fell hoefler stempel typewriter bembo sabon minion frutiger helvetica) & cmds
+f = %w(fell hoefler stempel typewriter bembo sabon minion frutiger helvetica neohellenic luxi gill) & cmds
 if not f.empty? then font = f.first end
 
 version = nil
@@ -35,6 +37,7 @@ if not v.empty? then version = v.first end
 
 if cmds.include?("html")
   i = Iris.new(filestring,bubo)
+  i.inputfile = inputfile if inputfile
   i.version(version)
   puts i.html
   exit
@@ -42,6 +45,7 @@ end
 
 if cmds.include?("markdown")
   i = Iris.new(filestring,bubo)
+  i.inputfile = inputfile if inputfile
   i.version(version)
   puts i.markdown
   exit
@@ -53,9 +57,19 @@ if not l.empty? then layout = l.first end
 
 if cmds.include?("latex")
   i = Iris.new(filestring,bubo)
+  i.inputfile = inputfile if inputfile
   i.version(version)
   i.font(font)
   puts i.latex(layout)
+  exit
+end
+
+if cmds.include?("rawlatex")
+  i = Iris.new(filestring,bubo)
+  i.inputfile = inputfile if inputfile
+  i.version(version)
+  i.font(font)
+  puts i.latex(layout,true)
   exit
 end
 
@@ -68,14 +82,11 @@ if cmds.include?("pdf")
   else
     i.pdf(layout)
   end
-  exit
-end
-
-if cmds.include?("rawlatex")
-  i = Iris.new(filestring,bubo)
-  i.version(version)
-  i.font(font)
-  puts i.rawlatex
+  if inputfile
+    i.inputfile = inputfile if inputfile
+    inputfilepdf = inputfile.sub(/#{File.extname(inputfile)}$/,".pdf")
+    system("cp texput.pdf #{inputfilepdf}")
+  end
   exit
 end
 
@@ -84,6 +95,16 @@ if cmds.include?("mrkd")
   i.version(version)
   i.font(font)
   puts i.mrkd
+  exit
+end
+
+if cmds.include?("docx")
+  File.open("tmpzzzyyy98", 'w') {|f| f.write(filestring) }
+  system("pandoc -f markdown+hard_line_breaks -t docx -o texput.docx tmpzzzyyy98; rm -rf tmpzzzyyy98")
+  if inputfile
+    inputfiledocx = inputfile.sub(/#{File.extname(inputfile)}$/,".docx")
+    system("cp texput.docx #{inputfiledocx}")
+  end
   exit
 end
 

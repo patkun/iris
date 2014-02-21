@@ -7,11 +7,12 @@ require_relative 'iris/bubo_grammar'
 require_relative 'iris/bubo_builder'
 
 class Iris
-  attr_accessor :bubo, :tree, :font
+  attr_accessor :bubo, :tree, :font, :inputfile
 
   def initialize(input,bubo=false)
     @bubo = bubo
     @input = input
+    @inputfile = nil
     @tree = nil
     @tree_f = OpenStruct.new
     @tree_f.version = "pupiltext"
@@ -92,7 +93,7 @@ class Iris
     return converter.convert
   end
 
-  def latex(layout=nil)
+  def latex(layout=nil,raw=nil)
     local_settings = @settings.dup
     local_input = @input.dup
     Vocab.flush
@@ -155,10 +156,16 @@ class Iris
 
     # DIRTY PROCESSING
     #local_input.gsub!(/([A-Z]{2,}( [A-Z]{2,})*)/){|m| "\\textsc{#{$1.downcase}}"}
-
-
-    converter = PandocRuby.new(local_input,*local_settings)
-    o = converter.convert
+    o = String.new
+    
+    if raw.nil? then
+      converter = PandocRuby.new(local_input,*local_settings)
+      o = converter.convert
+    else
+      converter = PandocRuby.new("--REPLACEME--",*local_settings)
+      o = converter.convert
+      o = o.gsub(/--REPLACEME--/,local_input)
+    end
 
     # MORE DIRTY PROCESSING
     o.gsub!(/\\itemsep1pt/,"\\itemsep0pt")

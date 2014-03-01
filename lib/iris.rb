@@ -13,6 +13,7 @@ class Iris
     @bubo = bubo
     @input = input
     @inputfile = nil
+    @comments = false
     @tree = nil
     @tree_f = OpenStruct.new
     @tree_f.version = "pupiltext"
@@ -31,6 +32,13 @@ class Iris
                  :smart,
                  :s,
                 ]
+  end
+
+  def comments(comments)
+    @comments = comments
+    if @comments == true then
+      @input.gsub!(/<!-{2,3}/,"").gsub!(/-->/,"")
+    end
   end
 
   def version(version)
@@ -164,7 +172,7 @@ class Iris
     else
       converter = PandocRuby.new("--REPLACEME--",*local_settings)
       o = converter.convert
-      o = o.gsub(/--REPLACEME--/,local_input)
+      o = o.gsub(/--REPLACEME--/,local_input.gsub(/\\\\/,"\\\\\\\\\\\\\\\\"))
     end
 
     # MORE DIRTY PROCESSING

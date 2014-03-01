@@ -35,10 +35,14 @@ version = nil
 v = %w(pupiltext teachertext notext) & cmds
 if not v.empty? then version = v.first end
 
+comments = false
+if cmds.include?("comments") then comments = true end
+
 if cmds.include?("html")
   i = Iris.new(filestring,bubo)
   i.inputfile = inputfile if inputfile
   i.version(version)
+  i.comments(comments)
   puts i.html
   exit
 end
@@ -47,6 +51,7 @@ if cmds.include?("markdown")
   i = Iris.new(filestring,bubo)
   i.inputfile = inputfile if inputfile
   i.version(version)
+  i.comments(comments)
   puts i.markdown
   exit
 end
@@ -59,8 +64,9 @@ if cmds.include?("latex")
   i = Iris.new(filestring,bubo)
   i.inputfile = inputfile if inputfile
   i.version(version)
+  i.comments(comments)
   i.font(font)
-  puts i.latex(layout)
+  puts i.latex(layout,nil)
   exit
 end
 
@@ -68,6 +74,7 @@ if cmds.include?("rawlatex")
   i = Iris.new(filestring,bubo)
   i.inputfile = inputfile if inputfile
   i.version(version)
+  i.comments(comments)
   i.font(font)
   puts i.latex(layout,true)
   exit
@@ -76,6 +83,7 @@ end
 if cmds.include?("pdf")
   i = Iris.new(filestring,bubo)
   i.version(version)
+  i.comments(comments)
   i.font(font)
   if test then
     i.pdf(layout,File.expand_path('../test/aux', File.dirname(__FILE__)))
@@ -93,6 +101,7 @@ end
 if cmds.include?("mrkd")
   i = Iris.new(filestring,bubo)
   i.version(version)
+  i.comments(comments)
   i.font(font)
   puts i.mrkd
   exit

@@ -7,6 +7,22 @@ test=false
 if test then require_relative File.join("..","lib","iris.rb")
 else require 'iris' end
 
+pandoc_opts = Hash.new
+ARGV.select{|a| /^-+/ =~ a}.each do |o|
+  v = ARGV[ARGV.index(o)+1]
+  pandoc_opts[o] = ARGV[ARGV.index(o)+1]
+  ARGV.delete_at(ARGV.index(o)+1)
+  ARGV.delete_at(ARGV.index(o))
+  # ARGV.delete_at(nxt)
+end
+
+po = Hash.new
+if not pandoc_opts.empty? then
+  pandoc_opts.each_key do |o|
+    po[o.gsub(/^-+/,'').to_sym] = pandoc_opts[o]
+  end
+end
+
 
 files = ARGV.select{|a| File.file?(a)}
 cmds = ARGV - files
@@ -22,35 +38,60 @@ else
   filestring = ARGF.read
 end
 
+
+
 bubo = false
 if cmds.include?("bubo") then
   bubo = true
 end
 
 font = "neohellenic"
-f = %w(fell hoefler stempel typewriter bembo sabon minion frutiger helvetica neohellenic luxi gill) & cmds
+f = %w(fell porson hoefler stempel vollkorn typewriter bembo sabon minion frutiger helvetica neohellenic luxi gill roboto garamond) & cmds
 if not f.empty? then font = f.first end
+
+linestretch = nil
+f = %w(1.5 2 3) & cmds
+if not f.empty? then linestretch = f.first end
 
 version = nil
 v = %w(pupiltext teachertext notext) & cmds
 if not v.empty? then version = v.first end
 
+org = false
+if cmds.include?("org") then org = true end
+if files.first =~ /\.org$/ then org = true end
+
 comments = false
 if cmds.include?("comments") then comments = true end
 
+standalone = false
+if cmds.include?("standalone") then standalone = true end
+
+landscape = false
+if cmds.include?("landscape") then landscape = true end
+
 if cmds.include?("html")
-  i = Iris.new(filestring,bubo)
-  i.inputfile = inputfile if inputfile
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
   i.version(version)
   i.comments(comments)
-  puts i.html
+  i.org(org)
+  i.standalone(standalone)
+  i.font(font)
+  o = i.html
+  if inputfile
+    inputfilehtml = inputfile.sub(/#{File.extname(inputfile)}$/,".html")
+    File.open(inputfilehtml, 'w') { |file| file.write(o) }
+  end
+  puts o
   exit
 end
 
 if cmds.include?("markdown")
-  i = Iris.new(filestring,bubo)
-  i.inputfile = inputfile if inputfile
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
   i.version(version)
+  i.org(org)
   i.comments(comments)
   puts i.markdown
   exit
@@ -60,38 +101,51 @@ layout = nil
 l = %w(twocolumn large margins nomargins) & cmds
 if not l.empty? then layout = l.first end
 
+size = nil
+s = %w(8pt 9pt 10pt 11pt 12pt 14pt 17pt 20pt) & cmds
+if not s.empty? then size = s.first end
+
 if cmds.include?("latex")
-  i = Iris.new(filestring,bubo)
-  i.inputfile = inputfile if inputfile
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
   i.version(version)
   i.comments(comments)
+  i.org(org)
   i.font(font)
-  puts i.latex(layout,nil)
+  i.linestretch(linestretch)
+  i.landscape(landscape)
+  puts i.latex(layout,nil,size)
   exit
 end
 
 if cmds.include?("rawlatex")
-  i = Iris.new(filestring,bubo)
-  i.inputfile = inputfile if inputfile
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
   i.version(version)
+  i.org(org)
   i.comments(comments)
   i.font(font)
-  puts i.latex(layout,true)
+  i.linestretch(linestretch)
+  i.landscape(landscape)
+  puts i.latex(layout,true,size)
   exit
 end
 
 if cmds.include?("pdf")
-  i = Iris.new(filestring,bubo)
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
   i.version(version)
   i.comments(comments)
+  i.org(org)
   i.font(font)
+  i.linestretch(linestretch)
+  i.landscape(landscape)
   if test then
     i.pdf(layout,File.expand_path('../test/aux', File.dirname(__FILE__)))
   else
-    i.pdf(layout)
+    i.pdf(layout,nil,size)
   end
   if inputfile
-    i.inputfile = inputfile if inputfile
     inputfilepdf = inputfile.sub(/#{File.extname(inputfile)}$/,".pdf")
     system("cp texput.pdf #{inputfilepdf}")
   end
@@ -99,9 +153,11 @@ if cmds.include?("pdf")
 end
 
 if cmds.include?("mrkd")
-  i = Iris.new(filestring,bubo)
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
   i.version(version)
   i.comments(comments)
+  i.org(org)
   i.font(font)
   puts i.mrkd
   exit
@@ -111,13 +167,15 @@ if cmds.include?("docx")
   File.open("tmpzzzyyy98", 'w') {|f| f.write(filestring) }
   system("pandoc -f markdown+hard_line_breaks -t docx -o texput.docx tmpzzzyyy98; rm -rf tmpzzzyyy98")
   if inputfile
+    i.inputfile(inputfile)
+    i.org(org)
     inputfiledocx = inputfile.sub(/#{File.extname(inputfile)}$/,".docx")
     system("cp texput.docx #{inputfiledocx}")
   end
   exit
 end
 
-i = Iris.new(filestring,bubo)
+i = Iris.new(filestring,bubo,po)
 i.public_methods(false).each do |m|
   if cmds.include?(m.to_s) then
     cmds.delete(m.to_s)
@@ -125,14 +183,3 @@ i.public_methods(false).each do |m|
     break
   end
 end
-
-
-
-
-
-
-
-
-
-
-

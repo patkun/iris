@@ -13,7 +13,7 @@ module BuboGrammar
     if node_cache[:document].has_key?(index)
       cached = node_cache[:document][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:document][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -45,7 +45,7 @@ module BuboGrammar
     if node_cache[:token].has_key?(index)
       cached = node_cache[:token][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:token][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -54,18 +54,22 @@ module BuboGrammar
     i0 = index
     r1 = _nt_environment
     if r1
+      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
     else
       r2 = _nt_command
       if r2
+        r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
         r0 = r2
       else
         r3 = _nt_simplecommand
         if r3
+          r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
           r0 = r3
         else
           r4 = _nt_text
           if r4
+            r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
             r0 = r4
           else
             @index = i0
@@ -99,16 +103,16 @@ module BuboGrammar
     if node_cache[:command].has_key?(index)
       cached = node_cache[:command][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:command][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
     end
 
     i0, s0 = index, []
-    if has_terminal?('\\', false, index)
-      r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
-      @index += 1
+    if (match_len = has_terminal?('\\', false, index))
+      r1 = true
+      @index += match_len
     else
       terminal_parse_failure('\\')
       r1 = nil
@@ -116,9 +120,9 @@ module BuboGrammar
     s0 << r1
     if r1
       i2 = index
-      if has_terminal?("begin", false, index)
-        r3 = instantiate_node(SyntaxNode,input, index...(index + 5))
-        @index += 5
+      if (match_len = has_terminal?("begin", false, index))
+        r3 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+        @index += match_len
       else
         terminal_parse_failure("begin")
         r3 = nil
@@ -132,9 +136,9 @@ module BuboGrammar
       s0 << r2
       if r2
         i4 = index
-        if has_terminal?("end", false, index)
-          r5 = instantiate_node(SyntaxNode,input, index...(index + 3))
-          @index += 3
+        if (match_len = has_terminal?("end", false, index))
+          r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+          @index += match_len
         else
           terminal_parse_failure("end")
           r5 = nil
@@ -189,16 +193,16 @@ module BuboGrammar
     if node_cache[:simplecommand].has_key?(index)
       cached = node_cache[:simplecommand][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:simplecommand][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
     end
 
     i0, s0 = index, []
-    if has_terminal?('\\', false, index)
-      r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
-      @index += 1
+    if (match_len = has_terminal?('\\', false, index))
+      r1 = true
+      @index += match_len
     else
       terminal_parse_failure('\\')
       r1 = nil
@@ -206,9 +210,9 @@ module BuboGrammar
     s0 << r1
     if r1
       i2 = index
-      if has_terminal?("begin", false, index)
-        r3 = instantiate_node(SyntaxNode,input, index...(index + 5))
-        @index += 5
+      if (match_len = has_terminal?("begin", false, index))
+        r3 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+        @index += match_len
       else
         terminal_parse_failure("begin")
         r3 = nil
@@ -222,9 +226,9 @@ module BuboGrammar
       s0 << r2
       if r2
         i4 = index
-        if has_terminal?("end", false, index)
-          r5 = instantiate_node(SyntaxNode,input, index...(index + 3))
-          @index += 3
+        if (match_len = has_terminal?("end", false, index))
+          r5 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+          @index += match_len
         else
           terminal_parse_failure("end")
           r5 = nil
@@ -243,9 +247,9 @@ module BuboGrammar
             r7 = _nt_options
             s0 << r7
             if r7
-              if has_terminal?('{}', false, index)
-                r9 = instantiate_node(SyntaxNode,input, index...(index + 2))
-                @index += 2
+              if (match_len = has_terminal?('{}', false, index))
+                r9 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                @index += match_len
               else
                 terminal_parse_failure('{}')
                 r9 = nil
@@ -286,7 +290,7 @@ module BuboGrammar
     if node_cache[:options].has_key?(index)
       cached = node_cache[:options][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:options][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -294,9 +298,9 @@ module BuboGrammar
 
     i0 = index
     i2, s2 = index, []
-    if has_terminal?('[', false, index)
-      r3 = instantiate_node(SyntaxNode,input, index...(index + 1))
-      @index += 1
+    if (match_len = has_terminal?('[', false, index))
+      r3 = true
+      @index += match_len
     else
       terminal_parse_failure('[')
       r3 = nil
@@ -306,9 +310,9 @@ module BuboGrammar
       r4 = _nt_plain_text
       s2 << r4
       if r4
-        if has_terminal?(']', false, index)
-          r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
-          @index += 1
+        if (match_len = has_terminal?(']', false, index))
+          r5 = true
+          @index += match_len
         else
           terminal_parse_failure(']')
           r5 = nil
@@ -329,11 +333,12 @@ module BuboGrammar
       r1 = instantiate_node(SyntaxNode,input, index...index)
     end
     if r1
+      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
     else
-      if has_terminal?('[]', false, index)
-        r7 = instantiate_node(SyntaxNode,input, index...(index + 2))
-        @index += 2
+      if (match_len = has_terminal?('[]', false, index))
+        r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+        @index += match_len
       else
         terminal_parse_failure('[]')
         r7 = nil
@@ -344,6 +349,7 @@ module BuboGrammar
         r6 = instantiate_node(SyntaxNode,input, index...index)
       end
       if r6
+        r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
         r0 = r6
       else
         @index = i0
@@ -387,16 +393,16 @@ module BuboGrammar
     if node_cache[:environment].has_key?(index)
       cached = node_cache[:environment][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:environment][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
     end
 
     i0, s0 = index, []
-    if has_terminal?('\\begin', false, index)
-      r1 = instantiate_node(SyntaxNode,input, index...(index + 6))
-      @index += 6
+    if (match_len = has_terminal?('\\begin', false, index))
+      r1 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+      @index += match_len
     else
       terminal_parse_failure('\\begin')
       r1 = nil
@@ -415,9 +421,9 @@ module BuboGrammar
             r5 = _nt_environmentcontent
             s0 << r5
             if r5
-              if has_terminal?('\\end', false, index)
-                r6 = instantiate_node(SyntaxNode,input, index...(index + 4))
-                @index += 4
+              if (match_len = has_terminal?('\\end', false, index))
+                r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+                @index += match_len
               else
                 terminal_parse_failure('\\end')
                 r6 = nil
@@ -458,7 +464,7 @@ module BuboGrammar
     if node_cache[:environmentcontent].has_key?(index)
       cached = node_cache[:environmentcontent][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:environmentcontent][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -490,7 +496,7 @@ module BuboGrammar
     if node_cache[:envoperation].has_key?(index)
       cached = node_cache[:envoperation][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:envoperation][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -509,7 +515,7 @@ module BuboGrammar
     if node_cache[:operation].has_key?(index)
       cached = node_cache[:operation][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:operation][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -528,7 +534,7 @@ module BuboGrammar
     if node_cache[:parameters].has_key?(index)
       cached = node_cache[:parameters][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:parameters][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -574,7 +580,7 @@ module BuboGrammar
     if node_cache[:parameter].has_key?(index)
       cached = node_cache[:parameter][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:parameter][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -609,15 +615,15 @@ module BuboGrammar
     if node_cache[:lbr].has_key?(index)
       cached = node_cache[:lbr][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:lbr][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
     end
 
-    if has_terminal?('{', false, index)
-      r0 = instantiate_node(Brace,input, index...(index + 1))
-      @index += 1
+    if (match_len = has_terminal?('{', false, index))
+      r0 = instantiate_node(Brace,input, index...(index + match_len))
+      @index += match_len
     else
       terminal_parse_failure('{')
       r0 = nil
@@ -633,15 +639,15 @@ module BuboGrammar
     if node_cache[:rbr].has_key?(index)
       cached = node_cache[:rbr][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:rbr][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
     end
 
-    if has_terminal?('}', false, index)
-      r0 = instantiate_node(Brace,input, index...(index + 1))
-      @index += 1
+    if (match_len = has_terminal?('}', false, index))
+      r0 = instantiate_node(Brace,input, index...(index + match_len))
+      @index += match_len
     else
       terminal_parse_failure('}')
       r0 = nil
@@ -657,7 +663,7 @@ module BuboGrammar
     if node_cache[:parametercontent].has_key?(index)
       cached = node_cache[:parametercontent][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:parametercontent][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -689,7 +695,7 @@ module BuboGrammar
     if node_cache[:text].has_key?(index)
       cached = node_cache[:text][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:text][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -697,10 +703,11 @@ module BuboGrammar
 
     s0, i0 = [], index
     loop do
-      if has_terminal?('\G[^\\\\\\{\\}]', true, index)
+      if has_terminal?(@regexps[gr = '\A[^\\\\\\{\\}]'] ||= Regexp.new(gr), :regexp, index)
         r1 = true
         @index += 1
       else
+        terminal_parse_failure('[^\\\\\\{\\}]')
         r1 = nil
       end
       if r1
@@ -726,7 +733,7 @@ module BuboGrammar
     if node_cache[:plain_text].has_key?(index)
       cached = node_cache[:plain_text][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:plain_text][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -734,10 +741,11 @@ module BuboGrammar
 
     s0, i0 = [], index
     loop do
-      if has_terminal?('\G[^\\\\^\\{^\\}^\\[^\\]]', true, index)
+      if has_terminal?(@regexps[gr = '\A[^\\\\^\\{^\\}^\\[^\\]]'] ||= Regexp.new(gr), :regexp, index)
         r1 = true
         @index += 1
       else
+        terminal_parse_failure('[^\\\\^\\{^\\}^\\[^\\]]')
         r1 = nil
       end
       if r1
@@ -766,16 +774,16 @@ module BuboGrammar
     if node_cache[:comment].has_key?(index)
       cached = node_cache[:comment][index]
       if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:comment][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
     end
 
     i0, s0 = index, []
-    if has_terminal?('%', false, index)
-      r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
-      @index += 1
+    if (match_len = has_terminal?('%', false, index))
+      r1 = true
+      @index += match_len
     else
       terminal_parse_failure('%')
       r1 = nil
@@ -784,10 +792,11 @@ module BuboGrammar
     if r1
       s2, i2 = [], index
       loop do
-        if has_terminal?('\G[^\\n]', true, index)
+        if has_terminal?(@regexps[gr = '\A[^\\n]'] ||= Regexp.new(gr), :regexp, index)
           r3 = true
           @index += 1
         else
+          terminal_parse_failure('[^\\n]')
           r3 = nil
         end
         if r3

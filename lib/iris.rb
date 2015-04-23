@@ -59,7 +59,7 @@ class Iris
   def org(org)
     @org = org
     if @org == true then
-      @input.gsub!(/(?<!\n)\n(?!\n)/,"\n\\\\\\")
+      #@input.gsub!(/(?<!\n)\n(?!\n)/,"\n\\\\\\")
       @settings[0][:from] = "org+hard_line_breaks+pipe_tables"
     end
   end
@@ -160,6 +160,31 @@ class Iris
       local_input = @tree.munch(@tree_f)
     end
     local_settings[0][:to] = "markdown_strict"
+    converter = PandocRuby.new(local_input,
+                               *local_settings
+                              )
+    return converter.convert
+  end
+
+ def rtf(*p)
+    local_settings = @settings.dup
+    local_input = @input.dup
+    local_settings[0][:to] = "rtf"
+    converter = PandocRuby.new(local_input,
+                               *local_settings
+                              )
+    return converter.convert
+  end
+
+  
+  def slides(*p)
+    local_settings = @settings.dup
+    local_input = @input.dup
+    #local_settings.delete(:s)
+    local_settings[0][:to] = "revealjs"
+    local_settings << {:V => 'revealjs-url=/Users/patrickkuntschnik/drive/lib/reveal.js'}
+    local_settings << {:V => 'theme=solarized'}
+    #local_settings.push('self-contained')
     converter = PandocRuby.new(local_input,
                                *local_settings
                               )

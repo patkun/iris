@@ -82,6 +82,8 @@ if cmds.include?("html")
   if inputfile
     inputfilehtml = inputfile.sub(/#{File.extname(inputfile)}$/,".html")
     File.open(inputfilehtml, 'w') { |file| file.write(o) }
+  else
+    File.open(File.join('texput.html'), 'w') { |file| file.write(o) }
   end
   puts o
   exit
@@ -94,6 +96,26 @@ if cmds.include?("markdown")
   i.org(org)
   i.comments(comments)
   puts i.markdown
+  exit
+end
+
+if cmds.include?("slides")
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
+  i.version(version)
+  i.org(org)
+  i.comments(comments)
+  puts i.slides
+  exit
+end
+
+if cmds.include?("rtf")
+  i = Iris.new(filestring,bubo,po)
+  i.inputfile(inputfile) if inputfile
+  i.version(version)
+  i.org(org)
+  i.comments(comments)
+  puts i.rtf
   exit
 end
 

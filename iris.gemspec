@@ -7,6 +7,8 @@ Gem::Specification.new do |s|
   s.description = "**iris** helps produce beautiful printable texts for printing and in HTML for use in the Classics classroom."
   s.authors     = ["Patrick Kuntschnik"]
   s.email       = 'patrick.kuntschnik@gmail.com'
+  s.add_runtime_dependency 'pandoc-ruby', '~>1.0'
+  s.add_runtime_dependency 'treetop', '~>1.6'
   s.files       = ["lib/iris.rb",
                    "lib/iris/bubo_grammar.rb",
                    "lib/iris/bubo_builder.rb",
